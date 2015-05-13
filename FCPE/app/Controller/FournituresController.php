@@ -1,0 +1,394 @@
+<?php 
+	/*
+	* @Module: Fournitures
+	* @Objectif: Gestion des fourniture de l'association, principalement des livres.
+	* @Vue: bal_vue_e001_users 
+	*/
+
+	class FournituresController extends AppController
+	{
+
+		public function beforeFilter(){
+			parent::beforeFilter();
+			$this->Auth->allow();
+		}
+
+		public function E300($bonOperationId=null, $classeId=null, $coursId=null){
+			/**
+			 * Permet de récupérer les lignes de bons
+			 */
+			$queryLigneDeBon = $this->Fourniture->query("SELECT DISTINCT * FROM bal_vue_e300_lignedebon NATURAL JOIN bal_vue_e300_produit WHERE BonOperationId=$bonOperationId GROUP BY RessourceId;");
+			$quantiteProduit = $this->Fourniture->query("SELECT SUM(Nombre) FROM bal_vue_e300_lignedebon WHERE BonOperationId=$bonOperationId;");
+			$prixTotal = $this->Fourniture->query("SELECT SUM(PrixSpecial) FROM bal_vue_e300_lignedebon WHERE BonOperationId=$bonOperationId;");
+			for ($i=0; $i < sizeof($queryLigneDeBon); $i++) { 
+				foreach ($queryLigneDeBon[$i]['bal_vue_e300_lignedebon'] as $key => $value) {
+					$lignedebon[$i][$key] = $value;
+					$lignedebon[$i]['OptionNom'] = $queryLigneDeBon[$i]['bal_vue_e300_produit']['OptionNom'];
+				}
+			}
+			// Envoi de tous les lignes de bons
+			if (isset($lignedebon)) $this->set('lignedebon', $lignedebon);
+			// Envoi nombre de produit
+			if (isset($quantiteProduit)) $this->set('quantiteProduit', $quantiteProduit[0][0]['SUM(Nombre)']);
+			// Envoi nombre de produit
+			if (isset($prixTotal)) $this->set('prixTotal', $prixTotal[0][0]['SUM(PrixSpecial)']);
+
+			for ($i=0; $i < sizeof($lignedebon); $i++) {
+				$ressId = $lignedebon[$i]['RessourceId']; 
+				$queryCB = $this->Fourniture->query("SELECT DISTINCT CodeBarre FROM bal_vue_e300_produit WHERE RessourceId=$ressId;");
+				for ($j=0; $j < sizeof($queryCB); $j++) { 	
+					$produits[$ressId][$j] = $queryCB[$j]['bal_vue_e300_produit']['CodeBarre'];
+				}
+			}
+			$this->set('produits', $produits);
+
+			/**
+			 * Permet de récupérer les bons
+			 */
+			$queryBon = $this->Fourniture->query("SELECT * FROM bal_vue_e300_bon WHERE BonOperationId=$bonOperationId;");
+			for ($i=0; $i < sizeof($queryBon); $i++) { 
+				foreach ($queryBon[$i]['bal_vue_e300_bon'] as $key => $value) {
+						$bon[$key] = $value;			
+				}
+			}
+			// Envoi de tous les bons
+			if (isset($bon)) $this->set('bon', $bon);
+			$this->set('bonOperationId', $bonOperationId);
+
+			/**
+			 * Permet de récupérer les produits
+			 */
+			if ($classeId != null && $coursId != null) {
+				$queryProduit = $this->Fourniture->query("SELECT CodeBarre, OptionNom FROM bal_vue_e300_produit WHERE CoursId=$coursId AND ClasseId=$classeId AND Fin IS NULL;");
+				for ($i=0; $i < sizeof($queryProduit); $i++) { 
+					foreach ($queryProduit[$i]['bal_vue_e300_produit'] as $key => $value) {
+						$produit[$queryProduit[$i]['bal_vue_e300_produit']['CodeBarre']] = $value;			
+					}
+				}
+			}
+			else {
+				$produit = null;
+			}
+			// Envoi de tous les bons
+			$this->set('produit', $produit);
+			$this->set('currentCoursId', $coursId);
+
+			/**
+			 * Permet de récupérer les disciplines
+			 */
+			$EtablissementId = $this->Session->read('Association.EtablissementId');
+			if (!is_null($classeId)) {
+				$queryDiscipline = $this->Fourniture->query("SELECT CoursId, OptionNom, CoursNom FROM bal_vue_e300_discipline WHERE ClasseId=$classeId AND EtablissementId=$EtablissementId GROUP BY CoursId;");
+				for ($i=0; $i < sizeof($queryDiscipline); $i++) { 
+					$discipline[$i]['CoursId'] = $queryDiscipline[$i]['bal_vue_e300_discipline']['CoursId'];		
+					$discipline[$i]['OptionNom'] = $queryDiscipline[$i]['bal_vue_e300_discipline']['OptionNom'];
+					$discipline[$i]['CoursNom'] = $queryDiscipline[$i]['bal_vue_e300_discipline']['CoursNom'];
+				}
+			}
+			else {
+				$discipline = null;
+			}
+			// Envoi de toutes les disciplines
+			$this->set('discipline', $discipline);
+			$this->set('currentClasseId', $classeId);
+
+			/**
+			 * Permet de récupérer les classes
+			 */
+			$queryClasse = $this->Fourniture->query("SELECT ClasseDesignation, ClasseId FROM bal_vue_e201_classe WHERE EtablissementId=$EtablissementId AND Fin IS NULL;");
+			for ($i=0; $i < sizeof($queryClasse); $i++) { 
+				$classe[$queryClasse[$i]['bal_vue_e201_classe']['ClasseId']] = $queryClasse[$i]['bal_vue_e201_classe']['ClasseDesignation'];		
+			}
+			// Envoi de toutes les classes
+			$this->set('classe', $classe);
+		
+			if($this->request->is("post")) 	{
+				$this->Session->setFlash('Livre ajouté.', 'flash/success');
+				$this->redirect(array('action'=>'E300'));
+			}
+
+			/**
+			 * Permet de récupérer tous les nom de vetusté
+			 */
+			$queryVetustenom = $this->Fourniture->query("SELECT vetustenom FROM bal_vetuste;");
+			for ($i=0; $i < sizeof($queryVetustenom); $i++) { 
+				foreach ($queryVetustenom[$i]['bal_vetuste'] as $key => $value) {
+						$vetustenom[$value] = $value;			
+				}
+			}
+			// Envoi de tous les noms de vetusté
+			$this->set('vetustenom', $vetustenom);
+
+			/**
+			 * Permet de récupérer tous les statuts de stockage
+			 */
+			$queryStatutStockage = $this->Fourniture->query("SELECT StatutDeStockageNom FROM bal_statutdestockage;");
+			for ($i=0; $i < sizeof($queryStatutStockage); $i++) { 
+				foreach ($queryStatutStockage[$i]['bal_statutdestockage'] as $key => $value) {
+						$statutStockage[$value] = $value;			
+				}
+			}
+			// Envoi de tous les noms de vetusté
+			$this->set('statutStockage', $statutStockage);
+		}
+
+		public function E300new($typedebon) {
+			$newOperation['PSessionId'] = $_SESSION['Auth']['User']['SessionId'];
+			$newOperation['PBonOperationId'] = null;
+			$newOperation['PConseilFCPEId'] = $_SESSION['Association']['ConseilFCPEId'];
+			$newOperation['PInterlocuteurId'] = $_SESSION['Dossier']['Eleve']['InterlocuteurId'];
+			$newOperation['PTypeDeBonNom'] = $typedebon;
+			$newOperation['PExercice'] = $_SESSION['Exercice'];
+			$this->makeCall("Save_BAL_Vue_E300_Bon", $newOperation);
+			$this->Session->setFlash('Opération créée avec succès.', 'flash/success');
+
+			$sessionid = $_SESSION['Auth']['User']['SessionId'];
+			$bonoperationid = $this->Fourniture->query("SELECT SUIVIIDLastId FROM bal_suiviid WHERE SUIVIIDSessionId=$sessionid AND SUIVIIDTableNom='BAL_BonOperation';");
+
+			$this->redirect(array('action' => 'E300', $bonoperationid[0]['bal_suiviid']['SUIVIIDLastId']));
+		}
+
+		public function E301($exercice=null){
+			/**
+			 * Permet de récupérer tous les exercices existant
+			 */
+			$queryExercices = $this->Fourniture->query("SELECT DISTINCT Exercice FROM bal_vue_e301_vetuste ORDER BY Exercice DESC;");
+			for ($i=0; $i < sizeof($queryExercices); $i++) { 
+				foreach ($queryExercices[$i]['bal_vue_e301_vetuste'] as $key => $value) {
+						$exercices[$value] = $value;			
+				}
+			}
+			// Envoi de tous les exercices
+			$this->set('exercices', $exercices);
+
+			/**
+			 * Permet de récupérer l'exercice courrant
+			 */
+			if ($exercice == null) $currExercice = $_SESSION['Exercice'];
+			else $currExercice = $exercice;
+			// Envoi de l'exercice demandé
+			$this->set('currExercice', $exercice);
+			
+			/**
+			 * Permet de récupérer tous les états de vetusté pour l'exercice choisi
+			 */
+			$conseilfcpeid = $this->Session->read('Association.ConseilFCPEId');
+			$queryRes = $this->Fourniture->query("SELECT * FROM bal_vue_e301_vetuste WHERE ConseilFCPEId=$conseilfcpeid AND Exercice=$currExercice;");
+			for ($i=0; $i < sizeof($queryRes); $i++) { 
+				foreach ($queryRes[$i]['bal_vue_e301_vetuste'] as $key => $value) {
+						$vetuste[$i][$key] = $value;			
+				}
+			}
+			// Envoi du toutes les résultat des états de vetusté
+			$this->set('vetuste', $vetuste);
+
+			/**
+			 * Permet de récupérer tous les type de bon
+			 */
+			$queryTypedebon = $this->Fourniture->query("SELECT typedebonnom FROM bal_typedebon;");
+			for ($i=0; $i < sizeof($queryTypedebon); $i++) { 
+				foreach ($queryTypedebon[$i]['bal_typedebon'] as $key => $value) {
+						$typedebon[$value] = $value;			
+				}
+			}
+			// Envoi de tous les types de bon
+			$this->set('typedebon', $typedebon);
+
+			/**
+			 * Permet de récupérer tous les nom de vetusté
+			 */
+			$queryVetustenom = $this->Fourniture->query("SELECT vetustenom FROM bal_vetuste;");
+			for ($i=0; $i < sizeof($queryVetustenom); $i++) { 
+				foreach ($queryVetustenom[$i]['bal_vetuste'] as $key => $value) {
+						$vetustenom[$value] = $value;			
+				}
+			}
+			// Envoi de tous les types de bon
+			$this->set('vetustenom', $vetustenom);
+		}
+
+		public function deleteVetuste($vetusteNom=null, $typedebon=null, $exercice=null) {
+			$deleteVetuste['PSessionId'] = $this->Session->read('Auth.User.SessionId');
+			$deleteVetuste['PVetusteNom'] = $vetusteNom;
+			$deleteVetuste['PConseilFCPEId'] = $this->Session->read('Association.ConseilFCPEId');
+			$deleteVetuste['PTypeDeBonNom'] = $typedebon;
+			$deleteVetuste['PExercice'] = $exercice;
+			$this->makeCall("Delete_BAL_Vue_E301_Vetuste", $deleteVetuste);
+			$this->Session->setFlash('Etat de vetusté supprimé.', 'flash/success');
+			$this->redirect(array('action' => 'E301', $exercice));
+		}
+
+		public function saveVetuste($vetusteNom=null, $typedebon=null, $taux=null, $exercice=null) {
+			if ($taux>=0.00 && $taux<=10.00) {
+				$saveVetuste['PSessionId'] = $this->Session->read('Auth.User.SessionId');
+				$saveVetuste['PVetusteNom'] = $vetusteNom;
+				$saveVetuste['PConseilFCPEId'] = $this->Session->read('Association.ConseilFCPEId');
+				$saveVetuste['PTypeDeBonNom'] = $typedebon;
+				$saveVetuste['PTaux'] = $taux;
+				$saveVetuste['PExercice'] = $exercice;
+				$res = $this->makeCall("Save_BAL_Vue_E301_Vetuste", $saveVetuste);
+				$this->Session->setFlash('Etat de vetusté ajouté.', 'flash/success');
+				$this->redirect(array('action' => 'E301', $exercice));
+			}
+			else {
+				$this->Session->setFlash('Le taux doit être compris entre 0 et 10.', 'flash/error');
+				$this->redirect($this->referer());
+			}
+		}
+
+		public function addLigneDeBon($bonOperationId, $codeBarre, $nombre) {
+			if (isset($codeBarre, $nombre)) {
+				$addLigneDeBon['PSessionId'] = $this->Session->read('Auth.User.SessionId');
+				$addLigneDeBon['PContientId'] = null;
+				$addLigneDeBon['PBonOperationId'] = $bonOperationId;
+				$addLigneDeBon['PCodeBarre'] = $codeBarre;
+				$addLigneDeBon['PStatutStockageNom'] = null;
+				$addLigneDeBon['PVetusteNom'] = null;
+				$addLigneDeBon['PNumeroExemplaire'] = null;
+				$addLigneDeBon['PNombre'] = $nombre;
+				$addLigneDeBon['PPrixSpecial'] = null;
+				$this->makeCall("Save_BAL_Vue_E300_LigneDeBon", $addLigneDeBon);
+				$this->Session->setFlash('Ligne de bon ajoutée.', 'flash/success');
+				$this->redirect(array('action' => 'E300'));
+			}
+			else {
+				$this->Session->setFlash('Veuillez spécifier tous les champs.', 'flash/error');
+				$this->redirect($this->referer());
+			}
+		}
+
+		public function saveLigneDeBon($contientId, $bonOperationId, $codeBarre, $statutStockage=null, $vetusteNom=null, $nombre=null, $prixSpecial=null) {
+			$saveLigneDeBon['PSessionId'] = $this->Session->read('Auth.User.SessionId');
+			$saveLigneDeBon['PContientId'] = $contientId;
+			$saveLigneDeBon['PBonOperationId'] = $bonOperationId;
+			$saveLigneDeBon['PCodeBarre'] = $codeBarre;
+			$saveLigneDeBon['PStatutStockageNom'] = $statutStockage;
+			$saveLigneDeBon['PVetusteNom'] = $vetusteNom;
+			$saveLigneDeBon['PNumeroExemplaire'] = "";
+			$saveLigneDeBon['PNombre'] = $nombre;
+			$saveLigneDeBon['PPrixSpecial'] = $prixSpecial;
+			$this->makeCall("Save_BAL_Vue_E300_LigneDeBon", $saveLigneDeBon);
+			$this->Session->setFlash('Modification effectuée.', 'flash/success');
+			$this->redirect(array('action' => 'E300'));
+		}
+
+		public function deleteLigneDeBon($contientId) {
+			$deleteLigneDeBon['PSessionId'] = $this->Session->read('Auth.User.SessionId');
+			$deleteLigneDeBon['ContientId'] = $contientId;
+			$this->makeCall("Delete_BAL_Vue_E300_LigneDeBon", $deleteLigneDeBon);
+			$this->Session->setFlash('Ligne de bon supprimée.', 'flash/success');
+			$this->redirect(array('action' => 'E300'));
+		}
+
+		public function E302(/*$classeId=null, $optionNom=null, $coursId=null,*/ $ressourceId=null){
+			//$_SESSION['Dossier']['EleveId'] = 5;
+			/**
+			 * Permet de récupérer les classes
+			 */
+			/*
+			$EtablissementId = $this->Session->read('Dossier.EtablissementId');
+			$EtablissementId = 4;
+			$queryClasse = $this->Fourniture->query("SELECT ClasseDesignation, ClasseId FROM bal_vue_e201_classe WHERE EtablissementId=$EtablissementId AND Fin IS NULL;");
+			for ($i=0; $i < sizeof($queryClasse); $i++) { 
+				$classe[$queryClasse[$i]['bal_vue_e201_classe']['ClasseId']] = $queryClasse[$i]['bal_vue_e201_classe']['ClasseDesignation'];		
+			}
+			// Envoi de toutes les classes
+			$this->set('classe', $classe);
+			$this->set('currentClasseId', $classeId);
+			*/
+
+			/**
+			 * Permet de récupérer les options
+			 */
+			/*
+			if (!is_null($optionNom)) {
+				$queryOption = $this->Fourniture->query("SELECT OptionNom FROM bal_vue_e201_option WHERE ClasseId=$classeId AND EtablissementId=$EtablissementId GROUP BY OptionNom;");
+				for ($i=0; $i < sizeof($queryOption); $i++) { 
+					$option[$i]['OptionNom'] = $queryOption[$i]['bal_vue_e201_option']['OptionNom'];
+				}
+			}
+			*/
+			// Envoi de toutes les options
+			/*
+			$this->set('option', $option);
+			$this->set('currentOptionNom', $optionNom);*/
+
+			/**
+			 * Permet de récupérer les disciplines
+			 */
+			/*
+			if (!is_null($classeId)) {
+				$queryDiscipline = $this->Fourniture->query("SELECT CoursId, OptionNom, CoursNom FROM bal_vue_e300_discipline NATURAL JOIN bal_vue_e201_option WHERE ClasseId=$classeId AND EtablissementId=$EtablissementId GROUP BY OptionNom;");
+				for ($i=0; $i < sizeof($queryDiscipline); $i++) { 
+					$discipline[$i]['CoursId'] = $queryDiscipline[$i]['bal_vue_e300_discipline']['CoursId'];		
+					$discipline[$i]['OptionNom'] = $queryDiscipline[$i]['bal_vue_e300_discipline']['OptionNom'];
+					$discipline[$i]['CoursNom'] = $queryDiscipline[$i]['bal_vue_e201_option']['CoursNom'];
+				}
+			}
+			else {
+				$discipline = null;
+			}
+			*/
+			// Envoi de toutes les disciplines
+			/*
+			$this->set('discipline', $discipline);
+			$this->set('currentCoursId', $coursId);
+			*/
+
+			if ($ressourceId!=null) {
+				/**
+				 * Permet de récupérer tous les types de produits
+				 */
+				$queryTypeProduit = $this->Fourniture->query("SELECT * FROM bal_vue_e302_produit GROUP BY TypeDeProduitNom;");
+				for ($i=0; $i < sizeof($queryTypeProduit); $i++) { 
+					$typedeproduit[$i]['TypeDeProduitNom'] = $queryTypeProduit[$i]['bal_vue_e302_produit']['TypeDeProduitNom'];
+					$typedeproduit[$i]['EstReutilisable'] = $queryTypeProduit[$i]['bal_vue_e302_produit']['EstReutilisable'];
+				}
+				// Envoi de tous les types de bon
+				$this->set('typedeproduit', $typedeproduit);
+
+				/**
+				 * Permet de récupérer les produits
+				 */
+				$queryProduit = $this->Fourniture->query("SELECT * FROM bal_vue_e302_produit WHERE Fin IS NULL AND RessourceId=$ressourceId;");
+				$obtenuDepuis = $this->Fourniture->query("SELECT MIN(Debut) FROM bal_vue_e302_produit WHERE Fin IS NULL AND ConseilFCPEId=5;");
+				for ($i=0; $i < sizeof($queryProduit); $i++) { 
+					foreach ($queryProduit[$i]['bal_vue_e302_produit'] as $key => $value) {
+						$produit[$i][$key] = $value;
+					}
+				}
+				$this->set('produit', $produit);
+				$this->set('obtenuDepuis', $obtenuDepuis[0][0]['MIN(Debut)']);
+			}
+		}
+
+		public function deleteProduit($codebarre) {
+			$deleteProduit['PSessionId'] = $this->Session->read('Auth.User.SessionId');
+			$deleteProduit['PCodeBarre'] = $codebarre;
+			$this->makeCall("Delete_BAL_Vue_E302_Produit", $deleteProduit);
+			$this->Session->setFlash('Produit supprimé.', 'flash/success');
+			$this->redirect($this->referer());
+		}
+
+		public function saveProduit($ressourceId, $codebarre, $designation, $anneeparution, $editeur, $auteur, $typedeproduit) {
+			if ($ressourceId!=null && $codebarre!=null && $designation!=null && $anneeparution!=null && $editeur!=null && $typedeproduit!=null) {
+				$saveProduit['PSessionId'] = $this->Session->read('Auth.User.SessionId');
+				$saveProduit['PRessourceId'] = $ressourceId;
+				$saveProduit['PCodeBarre'] = $codebarre;
+				$saveProduit['PDesignation'] = $designation;
+				$saveProduit['PAnneeParution'] = $anneeparution;
+				$saveProduit['PMarqueOuEditeur'] = $editeur;
+				$saveProduit['PAuteur'] = $auteur;
+				$saveProduit['PTypeDeProduitNom'] = $typedeproduit;
+				$this->makeCall("Save_BAL_Vue_E302_Produit", $saveProduit);
+				$this->Session->setFlash('Produit ajouté.', 'flash/success');
+				$this->redirect($this->referer());
+			}
+			else {
+				$this->Session->setFlash('Veuillez spécifier tous les champs.', 'flash/error');
+				$this->redirect($this->referer());
+			}
+		}
+	}
+
+ ?>
