@@ -163,6 +163,37 @@
 			}
 		}
 
+
+		/*
+		*	Action permettant de supprimer un eleve
+		*	
+		*/
+
+		public function E200Del(){
+
+			$this->set('EleveNom' , $this->Session->read('Dossier.Eleve.EleveNom') );
+			$this->set('ElevePrenom' , $this->Session->read('Dossier.Eleve.ElevePrenom') );
+			$eleve = $this->Student->find('all', array(
+          		'conditions' => array('Student.EleveId' => $this->Session->read('Dossier.Eleve.EleveId')))
+      		);
+      		//debug($eleve);
+      		$this->set(compact('eleve'));
+		}
+
+		/*
+		*	Action associée a E200Del
+		*/
+		public function deleteStudent(){
+
+			$eleve['EleveSessionId'] = $_SESSION['Auth']['User']['SessionId'];
+     		$eleve['EleveId'] = $_SESSION['Dossier']['Eleve']['EleveId'];
+	      	$this->makeCall("Delete_BAL_Vue_E200_Eleve", $eleve);
+			unset($_SESSION['Dossier']['Eleve']);
+			$this->Session->setFlash('Eleve supprimé', 'flash/success');
+			$this->redirect(array('controller' => 'Responsables' , 'action' => 'E100'));
+
+		}
+		
 		/*
 		*	Action sans vue
 		*	Permet l'ajout d'un numéro de téléphone à un élève.
