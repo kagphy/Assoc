@@ -143,10 +143,10 @@ class ResponsablesController extends AppController {
       //recuperation des numeros de telephone la personne
       $teltmp = $this->Responsable->query("SELECT * FROM bal_vue_e100_tel WHERE InterlocuteurId = $interlocuteur;");
       foreach ($teltmp as $key => $value) {
-        $tel[$key] = $value['bal_vue_e100_tel']['TelephoneNum'];
+        $teltmp[$key] = $value['bal_vue_e100_tel']['TelephoneNum'];
       }
       $this->set('perso', $perso);
-      $this->set('tel', $tel);
+      $this->set('teltmp', $teltmp);
     
     }
 
