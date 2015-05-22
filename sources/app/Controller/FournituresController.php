@@ -510,11 +510,11 @@
 		public function listeProduitsSeconde()
 		{
 
-			$queryNameSecondes = $this->Fourniture->query("SELECT DISTINCT ClasseDesignation FROM bal_vue_e201_classe WHERE ClasseDesignation LIKE '%Sec%'
-				OR ClasseDesignation LIKE '%2nd%'");
+			/*$queryNameSecondes = $this->Fourniture->query("SELECT DISTINCT ClasseDesignation FROM bal_vue_e201_classe WHERE ClasseDesignation LIKE '%Sec%'
+				OR ClasseDesignation LIKE '%2nd%'");*/
 
-			//Requete qui fait la liaison entre la table Classe et EstUtilisePour.
-			$queryClasseUtilisePour = $this->Fourniture		
+			$queryProducts = $this->Fourniture->query("SELECT DISTINCT Designation, Auteur, MarqueOuEditeur, AnneeParution, CodeBarre FROM bal_vue_e302_produit");
+			$this->set('queryProducts',$queryProducts);
 								
 		}
 
