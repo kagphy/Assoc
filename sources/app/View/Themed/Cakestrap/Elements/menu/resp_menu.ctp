@@ -68,7 +68,7 @@
 						}
 						if (isset($_SESSION['Dossier']['Eleve']['EleveId'])){ 
 					?>
-					<li><a href="#">Supprimer</a></li>
+					<li><a href="<?php echo $this->Html->url(array('controller'=>'Students', 'action'=>'E200Del')); ?>">Supprimer</a></li>
 					<?php
 						}
 					?>
