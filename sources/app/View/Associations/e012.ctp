@@ -21,115 +21,10 @@
 ?>
 
 </br></br>
-<p style="font-size:x-large; font-style:normal;">Association</p>
-
-<?php  
-    echo $this->Form->hidden('PSessionId');
-
-    echo $this->Form->hidden('PInterlocuteurId');;
-
-    echo $this->Form->hidden('PConseilFCPEId');
-
-    echo $this->Form->input('PConseilFCPENom', array(
-        'class' => 'form-control',
-        'placeholder' => 'Nom d\'association',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Nom d\'association'
-        )
-    )); 
-
-    echo $this->Form->input('PTutelleId', array(
-        'class' => 'form-control',
-        'options' => $tutelle,
-        'empty' => '',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Demande d\'affiliation à'
-        )
-    ));
-
-?>
-
-</br></br>
-<p style="font-size:x-large; font-style:normal;">Siège social</p>
-
-<?php  
-
-    echo $this->Form->hidden('PEtablissementId');
-
-    echo $this->Form->hidden('PSCEndroitId');
-
-    echo $this->Form->input('PSCNumEtVoie', array(
-        'class' => 'form-control',
-        'placeholder' => 'Numéro, Voie',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Numéro, Voie'
-        )
-    )); 
-
-    echo $this->Form->input('PSCLieuDit', array(
-        'class' => 'form-control',
-        'placeholder' => 'Lieu-Dit',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Lieu-Dit'
-        )
-    )); 
-
-    echo $this->Form->input('PSCVille', array(
-        'class' => 'form-control',
-        'placeholder' => 'Ville',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Ville'
-        )
-    ));
-
-    echo $this->Form->input('PSCPays', array(
-        'class' => 'form-control',
-        'placeholder' => 'Pays',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Pays'
-        )
-    ));
-
-    echo $this->Form->input('PSCCodePostal', array(
-        'class' => 'form-control',
-        'placeholder' => 'Code Postal',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Code Postal'
-        )
-    ));
-    
-    echo $this->Form->input('PSCApptBatResidence', array(
-        'class' => 'form-control',
-        'placeholder' => 'Appt, Bât, Résidence',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'Appt, Bât, Résidence'
-        )
-    )); 
-
-    echo $this->Form->input('PSCBP', array(
-        'class' => 'form-control',
-        'placeholder' => 'BP',
-        'label' => array(
-            'class' => 'col-sm-2 control-label',
-            'text' => 'BP'
-        )
-    ));
-?>
-
-</br></br>
 <p style="font-size:x-large; font-style:normal;">Etablissement scolaire</p>
 
-<?php
-
-    echo $this->Form->input('PEtablissementNom', array(
+<?php  
+ echo $this->Form->input('PEtablissementNom', array(
         'class' => 'form-control',
         'placeholder' => 'Nom de l\'établissement',
         'label' => array(
@@ -213,6 +108,112 @@
         )
     ));
 
+?>
+
+</br></br>
+<p style="font-size:x-large; font-style:normal;">Association</p>
+
+<?php
+echo $this->Form->hidden('PSessionId');
+
+    echo $this->Form->hidden('PInterlocuteurId');;
+
+    echo $this->Form->hidden('PConseilFCPEId');
+
+    echo $this->Form->input('PConseilFCPENom', array(
+        'class' => 'form-control',
+        'placeholder' => 'Nom d\'association',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Nom d\'association'
+        )
+    )); 
+
+    echo $this->Form->input('PTutelleId', array(
+        'class' => 'form-control',
+        'options' => $tutelle,
+        'empty' => '',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Demande d\'affiliation à'
+        )
+    ));
+
+?>
+   
+
+   </br></br>
+<p style="font-size:x-large; font-style:normal;">Siège social</p>
+
+<?php  
+
+    echo $this->Form->hidden('PEtablissementId');
+
+    echo $this->Form->hidden('PSCEndroitId');
+
+    echo $this->Form->input('PSCNumEtVoie', array(
+        'class' => 'form-control',
+        'placeholder' => 'Numéro, Voie',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Numéro, Voie'
+        )
+    )); 
+
+    echo $this->Form->input('PSCLieuDit', array(
+        'class' => 'form-control',
+        'placeholder' => 'Lieu-Dit',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Lieu-Dit'
+        )
+    )); 
+
+    echo $this->Form->input('PSCVille', array(
+       // 'allowEmpty' => false,
+        'class' => 'form-control',
+        'placeholder' => 'Ville',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Ville'
+        )
+    ));
+
+    echo $this->Form->input('PSCPays', array(
+        'class' => 'form-control',
+        'placeholder' => 'Pays',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Pays'
+        )
+    ));
+
+    echo $this->Form->input('PSCCodePostal', array(
+        'class' => 'form-control',
+        'placeholder' => 'Code Postal',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Code Postal'
+        )
+    ));
+    
+    echo $this->Form->input('PSCApptBatResidence', array(
+        'class' => 'form-control',
+        'placeholder' => 'Appt, Bât, Résidence',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'Appt, Bât, Résidence'
+        )
+    )); 
+
+    echo $this->Form->input('PSCBP', array(
+        'class' => 'form-control',
+        'placeholder' => 'BP',
+        'label' => array(
+            'class' => 'col-sm-2 control-label',
+            'text' => 'BP'
+        )
+    ));
 ?>
 
 <div class="col-sm-offset-2 col-sm-10">
