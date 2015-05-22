@@ -66,7 +66,7 @@ class DATABASE_CONFIG {
 		'persistent' => false,
 		'host' => '127.0.0.1',
 		'login' => 'root',
-		'password' => 'ToTtP3Ni',
+		'password' => 'root',
 		'database' => 'fcpe',
 		'prefix' => 'BAL_',
 		'encoding' => 'utf8',
