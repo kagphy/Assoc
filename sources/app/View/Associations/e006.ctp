@@ -9,10 +9,13 @@
 		            'class' => 'form-control'
 		        )
 		    ));
-
-
-			echo $this->Form->checkbox('all', array('hiddenField' => true,
-				));
+		    
+		
+			echo $this->Form->Label("Tous les adherents ");            
+                echo $this->Form->checkbox('Tous les adherents', [
+                                'value' => '1',
+                                'hiddenField' => '0',
+                            ]);
 
 			echo $this->Form->input('Classe', array(
 		        'class' => 'form-control',
@@ -20,7 +23,7 @@
 		        'empty' => 'Classe',
 		        'label' => array(
 		            'class' => 'control-label',
-		            'text' => 'Paret D\'élèves de '
+		            'text' => ' Parent d\'élèves de '
 		        )
 		    ));
 
@@ -30,7 +33,7 @@
 		        'empty' => '',
 		        'label' => array(
 		            'class' => 'control-label',
-		            'text' => 'Format d\'étiquettes'
+		            'text' => ' Format d\'étiquettes'
 		        )
 		    ));
 

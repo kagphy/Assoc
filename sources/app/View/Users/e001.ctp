@@ -1,9 +1,12 @@
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
-
+<h5> je suis deja enregistré</h5>
+</br>
         <?php 
 
+
             echo $this->Form->create('User', array(
+
                 'class' => 'form-horizontal',
                 'inputDefaults' => array(
                     'div' => 'form-group',
@@ -45,8 +48,9 @@
 
         </br></br>
         <p>
-            Je ne suis pas encore enregistré
-            <a href="<?php echo $this->Html->url(array('controller'=>'users', 'action'=>'E013')); ?>" class="btn btn-default" role="button">Créer</a>
+            Je ne suis pas encore enregistré 
+            </br></br>
+            <a href="<?php echo $this->Html->url(array('controller'=>'users', 'action'=>'E013')); ?>" class="btn btn-default" role="button">Créer mon compte</a>
         </p>
 
     </div>

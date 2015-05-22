@@ -28,9 +28,15 @@
 		        )
 		    ));
 
+		    for( $i = 0 ; $i < sizeof($tutelle); $i++){
+		    	$tutel[$i] = $tutelle[$i]['bal_vue_e005_assoc']['AffilieNom'];
+		    }
+	
 		    echo $this->Form->input('TutelleId', array(
-		        'class' => 'form-control',
-		        'disabled' => true,
+		    	 'options' => array($tutel),		        
+		        'selected' => $assocCourrante['TutelleId'],
+		       	'class' => 'form-control',
+		        //'disabled' => true,
 		        'value' => $assocCourrante['TutelleId'],
 		        'label' => array(
 		            'class' => 'control-label',
@@ -38,12 +44,28 @@
 		        )
 		    ));
 
-		    echo $this->Form->input('AdministrateurId', array(
+		      
+
+		    for( $i = 0 ; $i < sizeof($Administrateur); $i++){
+		    	$admin[$i] = $Administrateur[$i]['bal_vue_e001_users']['PersonneNom'];
+		    }
+/* echo $this->Form->input('TypeDEtablissementNom', array(
 		        'class' => 'form-control',
+		        'options' => array('Lycée' => 'Lycée', 'Collège' => 'Collège', 'Primaire' => 'Primaire'),		        
+		        'selected' => $assocCourrante['TypeDEtablissementNom'],
 		        'label' => array(
 		            'class' => 'control-label',
-		            'text' => 'Administrateur'
-		        )
+		            'text' => 'Type'*/
+		    
+		    echo $this->Form->input('AdministrateurId', array(
+				'options' => array($admin),		        
+		      //  'selected' => $assocCourrante['AdministrateurId'],
+		       	'class' => 'form-control',
+		       // 'value' => $assocCourrante['AdministrateurId'],
+		        'label' => array(
+		            'class' => 'control-label',
+		            'text' => 'Administrateur'		        
+		            )
 		    ));
 
 		?>
@@ -192,6 +214,8 @@
 		        'type' => 'submit',
 		        'class' => 'btn btn-default'
 		    ));
+
+		    		    echo $this->form->end();
 		?>
 
 	</div>
