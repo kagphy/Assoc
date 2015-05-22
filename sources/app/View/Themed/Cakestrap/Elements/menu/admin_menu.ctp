@@ -74,7 +74,7 @@
 						}
 						if (isset($_SESSION['Dossier']['Eleve']['EleveId'])){ 
 					?>
-					<li><a href="<?php echo $this->Html->url(array('controller'=>'Students', 'action'=>'E200Del')); ?>">Supprimer</a></li>
+					<li><a href="#">Supprimer</a></li>
 					<?php
 						}
 					?>
@@ -116,7 +116,7 @@
 					?>
 					<li><a href="#">Supprimer</a></li>
 					<li><a href="<?php echo $this->Html->url(array('controller'=>'fournitures', 'action'=>'E301')); ?>">Etats de vétusté</a></li>
-					<li><a href="#">Produits</a></li>
+					<li><a href="<?php echo $this->Html->url(array('controller'=>'fournitures', 'action'=>'listeProfils')); ?>">Produits</a></li>
 					<li><a href="#">Fournisseur</a></li>
 					<?php } ?>
 				</ul>

@@ -501,6 +501,41 @@
 				$this->redirect($this->referer());
 			}
 		}
+
+		public function listeProduits()
+		{
+		
+		}
+
+		public function listeProduitsSeconde()
+		{
+
+			$queryNameSecondes = $this->Fourniture->query("SELECT DISTINCT ClasseDesignation FROM bal_vue_e201_classe WHERE ClasseDesignation LIKE '%Sec%'
+				OR ClasseDesignation LIKE '%2nd%'");
+
+			//Requete qui fait la liaison entre la table Classe et EstUtilisePour.
+			$queryClasseUtilisePour = $this->Fourniture		
+								
+		}
+
+		public function listeProfils(){
+			
+			//requete qui calcule distinctement tous les noms pour les classes de Seconde dans la base de données.
+			$queryNameSecondes = $this->Fourniture->query("SELECT DISTINCT ClasseDesignation FROM bal_vue_e201_classe WHERE ClasseDesignation LIKE '%Sec%'
+				OR ClasseDesignation LIKE '%2nd%'");
+
+			//Requete qui calcule distinctement tous les noms pour les classe de Première dans la base de données.
+			$queryNamePrem = $this->Fourniture->query("SELECT DISTINCT ClasseDesignation FROM bal_vue_e201_classe WHERE ClasseDesignation LIKE '1%'
+				OR ClasseDesignation LIKE 'Prem%'");
+
+			//Requete qui calcule distinctement tous les noms pour les classe de Terminale dans la base de données.
+			$queryNameTerm = $this->Fourniture->query("SELECT DISTINCT ClasseDesignation FROM bal_vue_e201_classe WHERE ClasseDesignation LIKE 'Term%'
+				OR ClasseDesignation LIKE 'Tle%'");
+
+			$this->set('queryNameSecondes', $queryNameSecondes);
+			$this->set('queryNamePrem', $queryNamePrem);
+			$this->set('queryNameTerm', $queryNameTerm);
+		}
 	}
 
  ?>
