@@ -21,7 +21,7 @@ class ResponsablesController extends AppController {
       foreach ($teltmp as $key => $value) {
         $tel[$key] = $value['bal_vue_e100_tel']['TelephoneNum'];
       }
-   		$this->set('perso', $perso);
+      $this->set('perso', $perso);
       if (isset($tel))
         $this->set('tel', $tel);
 
@@ -125,8 +125,34 @@ class ResponsablesController extends AppController {
         $this->Session->setFlash('Parent créé.', 'flash/success');
         $this->redirect(array('controller'=>'Responsables', 'action'=>'e100'));
       }
-     
-    }
+    
+
+
+if ($this->request->is('post')) {
+            /**
+             * Si un champs est vide alors qu'il ne doit pas l'être
+             */
+            if ($this->request->data['Personne']['PersonneNom']=='' //||
+                //$this->request->data['Personne']['PPSCNumEtVoie']=='' ||
+               // $this->request->data['Personne']['PEMail']=='' ||
+                //$this->request->data['Personne']['PNumEtVoie']=='' ||
+                //$this->request->data['Personne']['PLieuDit']=='' ||
+                //$this->request->data['Personne']['PPays']=='' ||
+                //$this->request->data['Personne']['PCodePostal']=='' ||
+                //$this->request->data['Personne']['PApptBatResidence']=='' ||
+                //$this->request->data['Personne']['PBP']=='' 
+                )
+            {
+               $this->redirect(array('controller' => 'users', 'action' => 'asso'));
+               // $this->Session->setFlash('Veuillez compléter les champs obligatoires.', 'flash/error');
+               // $this->redirect($this->referer());
+            }
+}
+
+}
+
+
+    
 
     /*
       supression d'un responsable legale
@@ -143,10 +169,10 @@ class ResponsablesController extends AppController {
       //recuperation des numeros de telephone la personne
       $teltmp = $this->Responsable->query("SELECT * FROM bal_vue_e100_tel WHERE InterlocuteurId = $interlocuteur;");
       foreach ($teltmp as $key => $value) {
-        $tel[$key] = $value['bal_vue_e100_tel']['TelephoneNum'];
+        $teltmp[$key] = $value['bal_vue_e100_tel']['TelephoneNum'];
       }
       $this->set('perso', $perso);
-      $this->set('tel', $tel);
+      $this->set('teltmp', $teltmp);
     
     }
 
@@ -168,7 +194,7 @@ class ResponsablesController extends AppController {
     public function deletetel($num = null, $op = null){
       //gestion des ajout/supression des numeros de telephone
 
-      $usrInterlocuteur = $_SESSION['Auth']['User']['SessionId'];;
+      $usrInterlocuteur = $_SESSION['Auth']['User']['SessionId'];
       $interlocuteur = $_SESSION['Dossier']['Parent']['InterlocuteurId'];
       if($op == 0){
         //supression
