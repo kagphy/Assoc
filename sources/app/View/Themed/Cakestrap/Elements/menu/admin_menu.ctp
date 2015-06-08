@@ -2,8 +2,24 @@
 	<div class="navbar-header">
 	<div class="collapse navbar-collapse navbar-ex1-collapse">
 		<ul class="nav navbar-nav">
-			<a class="navbar-brand" href="<?php echo $this->Html->url('/'); ?>">Accueil</a>
-			<li class="dropdown">
+		
+
+              <?php 
+						if (isset($_SESSION['Dossier']['Parent']['PersonneNom'])) {
+							
+						
+					?>
+ 
+                  <a class="navbar-brand" href="<?php echo $this->Html->url('/'); ?>">Fermer la session</a> 
+                  <?php 
+                      
+                      }
+                    else
+                          {                      ?>
+
+                      <a class="navbar-brand" href="<?php echo $this->Html->url('/'); ?>">Accueil</a> 
+
+                         <li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Association<b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<?php 
@@ -22,6 +38,12 @@
 					<li><a href="#">Supprimer</a></li>
 				</ul>
 			</li>
+
+
+
+                      <?php } ?>
+                     
+			
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Parent <b class="caret"></b></a>
 				<ul class="dropdown-menu">
@@ -105,9 +127,10 @@
 					<li class="dropdown-submenu">
 						<a href="#">Nouveau</a>
 						<ul class="dropdown-menu">
-							<?php foreach ($typedebon as $key => $value): ?>
+						<?php if (isset($typedebon)) { ?>
+							<?php foreach ($typedebon as $key => $value){ ?>
 							<li><a href="<?php echo $this->Html->url(array('controller'=>'fournitures', 'action'=>'e300new', $key)); ?>"><?php echo $key; ?></a></li>
-							<?php endforeach ?>
+							<?php }} ?>
                 		</ul> 
 					</li>
 					<?php 
@@ -133,7 +156,7 @@
 						if (isset($_SESSION['Exercice'])){ 
 					?>
 					<li><a href="<?php echo $this->Html->url(array('controller'=>'Comptas', 'action'=>'E401')); ?>">Opérations</a></li>
-					<li><a href="<?php echo $this->Html->url(array('controller'=>'Comptas', 'action'=>'E402')); ?>">Relevés fiscaux</a></li>
+					
 					<li><a href="#">Tableau de bord</a></li>
 					<li><a href="<?php echo $this->Html->url(array('controller'=>'Comptas', 'action'=>'E404')); ?>">Modes de règlement</a></li>
 					<?php } ?>
